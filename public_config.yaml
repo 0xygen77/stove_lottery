@@ -1,0 +1,12 @@
+openai:
+  api_key: '<openai_api_key>'
+
+stove:
+  client_id: '<client_id>'
+  provider_data:
+    user_id: '<account_email>'
+    password: '<password>'
+
+drawing_lot:
+  sub_event_no: 1000000108
+  lang: 'zh-tw'
