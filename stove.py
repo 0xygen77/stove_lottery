@@ -2,9 +2,23 @@ import httpx
 import time
 import yaml
 from openai import OpenAI
+import requests
+
+# Add Telegram bot notification function
+def send_telegram_notification(bot_token, chat_id, message):
+    telegram_url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    try:
+        response = requests.post(telegram_url, json={
+            "chat_id": chat_id,
+            "text": message
+        })
+        return response.json()
+    except Exception as e:
+        print(f"Failed to send Telegram notification: {e}")
+        return None
 
 # Load configuration
-with open('public_config.yaml', 'r') as file:
+with open('config.yaml', 'r') as file:
     config = yaml.safe_load(file)
 
 # HTTP/2 client with support for multiple requests
@@ -116,17 +130,31 @@ if login_response.json()['code'] == 0:
         "lang": config['drawing_lot']['lang']
     }
 
-    for _ in range(1):
+    for _ in range(30):
         try:
             drawing_lot_response = client.post(drawing_lot_url, headers=drawing_lot_headers, json=drawing_lot_data)
             drawing_lot_json = drawing_lot_response.json()
-            
-            # Check if the expected keys exist
+
             if drawing_lot_json.get('value') and drawing_lot_json['value'].get('gift_info'):
                 print("Drawing lot response:", drawing_lot_json['value']['gift_info']['gift_name'])
             else:
                 print("No gift info found in the response")
-        
+
+            if config.get('telegram', {}).get('enabled', False):
+                bot_token = config['telegram']['bot_token']
+                chat_id = config['telegram']['chat_id']
+                
+                # Prepare notification message based on drawing result
+                if drawing_lot_json.get('success', False):
+                    message = f"🎉 Lottery Drawing Successful!\n"
+                    message += f"Details: {drawing_lot_json}"
+                else:
+                    message = f"❌ Lottery Drawing Failed\n"
+                    message += f"Error: {drawing_lot_json}"
+                
+                # Send Telegram notification
+                send_telegram_notification(bot_token, chat_id, message)
+
         except Exception as e:
             print(f"Error in drawing lot request: {e}")
             print("Response content:", drawing_lot_response.text)

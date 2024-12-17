@@ -10,3 +10,8 @@ stove:
 drawing_lot:
   sub_event_no: 1000000108
   lang: 'zh-tw'
+
+telegram:
+  enabled: true
+  bot_token: '<bot_token>'
+  chat_id: '<chat_id>'
