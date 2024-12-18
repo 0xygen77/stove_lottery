@@ -145,9 +145,9 @@ if login_response.json()['code'] == 0:
                 chat_id = config['telegram']['chat_id']
                 
                 # Prepare notification message based on drawing result
-                if drawing_lot_json.get('success', False):
+                if drawing_lot_json['code'] == 0:
                     message = f"🎉 Lottery Drawing Successful!\n"
-                    message += f"Details: {drawing_lot_json}"
+                    message += f"Details: {drawing_lot_json['value']['gift_info']['gift_name']}"
                 else:
                     message = f"❌ Lottery Drawing Failed\n"
                     message += f"Error: {drawing_lot_json}"
