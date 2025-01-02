@@ -8,7 +8,7 @@ stove:
     password: '<password>'
 
 drawing_lot:
-  sub_event_no: 1000000108
+  sub_event_no: 1000000109
   lang: 'zh-tw'
 
 telegram:
